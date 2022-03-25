@@ -1,0 +1,9 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:h2:file:./testdb;USER=sa;PASSWORD=sa;AUTO_SERVER=TRUE; #Stored in file so that it can be inspected
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: sa
