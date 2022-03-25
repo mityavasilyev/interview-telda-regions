@@ -1,9 +1,11 @@
 package io.github.mityavasilyev.regionservice.model;
 
+import lombok.Builder;
 import lombok.Data;
 
 
 @Data
+@Builder
 public class Region {
 
     // Needed to avoid string duplication during the process of mapping
@@ -15,6 +17,5 @@ public class Region {
     private Long id;
     private String regionName;
     private String regionShortName;
-
 
 }

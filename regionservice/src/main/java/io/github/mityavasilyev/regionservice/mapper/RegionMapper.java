@@ -53,6 +53,8 @@ public interface RegionMapper {
     })
     Optional<Region> findByShortName(@Param("shortName") String shortName);
 
+
+    @Options(useGeneratedKeys = true)
     @Insert("insert into region (" + COLUMN_REGION_NAME + ", " + COLUMN_REGION_SHORT_NAME + ")" +
             " values(#{regionName}, #{regionShortName})")
     Integer addRegion(Region region);
