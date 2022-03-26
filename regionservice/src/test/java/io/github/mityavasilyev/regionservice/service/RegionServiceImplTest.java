@@ -15,8 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class RegionServiceImplTest {
@@ -212,6 +211,10 @@ class RegionServiceImplTest {
         when(mapper.updateRegion(any()))
                 .thenReturn(dummyRepo.put(testRegion.getId(), testRegion) != null);
         assertFalse(service.updateRegion(testRegion));
+
+        when(mapper.updateRegion(any()))
+                .thenThrow(new RuntimeException("Some trouble with saving to DB"));
+        assertFalse(service.updateRegion(testRegion));
     }
 
     @Test
@@ -224,5 +227,19 @@ class RegionServiceImplTest {
 
         assertThrows(IllegalArgumentException.class,
                 () -> service.updateRegion(Region.builder().id(1L).regionName(" ").build()));
+    }
+
+    @Test
+    void processRegion() {
+        Region newRegion = Region.builder()
+                .regionName("new region")
+                .build();
+        when(mapper.addRegion(any()))
+                .thenReturn(2);
+        service.addRegion(newRegion);
+
+        verify(mapper).addRegion(argThat((Region processedRegion) ->
+                processedRegion.getRegionName().equals("New Region") && processedRegion.getRegionShortName().equals("NR")
+        ));
     }
 }
