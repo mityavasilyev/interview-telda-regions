@@ -115,7 +115,8 @@ public class RegionServiceImpl implements RegionService {
         log.info("Updating region {} with id: {}", region.getRegionName(), region.getId());
 
         try {
-            return mapper.updateRegion(processRegion(region));
+            region.setRegionName(WordUtils.capitalizeFully(region.getRegionName()));
+            return mapper.updateRegion(region);
         } catch (RuntimeException exception) {
             // If failed to save to database
             log.error("Failed to update region [{}]", region.getRegionName());
