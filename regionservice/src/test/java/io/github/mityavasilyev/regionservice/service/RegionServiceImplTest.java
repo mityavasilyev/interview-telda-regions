@@ -168,7 +168,8 @@ class RegionServiceImplTest {
 
         when(mapper.addRegion(any()))
                 .thenThrow(new RuntimeException("DB Mock exception"));
-        assertFalse(service.addRegion(newRegion));
+        assertThrows(IllegalArgumentException.class,
+                () -> service.addRegion(newRegion));
     }
 
     @Test
@@ -192,9 +193,11 @@ class RegionServiceImplTest {
                 .thenReturn(dummyRepo.remove(1L) != null);
         assertTrue(service.deleteRegion(1L));
 
+        // Deleting non existing entity
         when(mapper.deleteRegion(2L))
                 .thenReturn(dummyRepo.remove(2L) != null);
-        assertFalse(service.deleteRegion(2L));
+        assertThrows(RegionNotFoundException.class,
+                () -> service.deleteRegion(2L));
     }
 
     @Test
@@ -214,14 +217,17 @@ class RegionServiceImplTest {
 
         assertTrue(service.updateRegion(testRegion));
 
+        // Trying to update non existing entity
         dummyRepo.clear();
         when(mapper.updateRegion(any()))
                 .thenReturn(dummyRepo.put(testRegion.getRegionCode(), testRegion) != null);
-        assertFalse(service.updateRegion(testRegion));
+        assertThrows(RegionNotFoundException.class,
+                () -> service.updateRegion(testRegion));
 
         when(mapper.updateRegion(any()))
                 .thenThrow(new RuntimeException("Some trouble with saving to DB"));
-        assertFalse(service.updateRegion(testRegion));
+        assertThrows(RegionNotFoundException.class,
+                () -> service.updateRegion(testRegion));
     }
 
     @Test
