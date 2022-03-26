@@ -73,7 +73,7 @@ public class RegionServiceImpl implements RegionService {
         if (regionShortName.isBlank()) throw new IllegalArgumentException("Region name cannot be blank");
         log.info("Getting a region by region name: {}", regionShortName);
 
-        return mapper.findByName(regionShortName)
+        return mapper.findByShortName(regionShortName)
                 .map(RegionDTO::entityToDTO)
                 .orElseThrow(() -> {
                     throw new RegionNotFoundException("No region with such name: " + regionShortName);
