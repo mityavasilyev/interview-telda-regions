@@ -46,6 +46,8 @@ public class ExceptionController {
     public ResponseEntity<Object> handleDataIntegrityViolation(Exception ex, WebRequest request) {
         log.warn("Internal error has occurred: {}", ex.getMessage());
 
-        return ResponseEntity.internalServerError().build();
+        return ResponseEntity
+                .internalServerError()
+                .body(new ErrorResponse<String>("Bruh, some trouble on server side"));
     }
 }

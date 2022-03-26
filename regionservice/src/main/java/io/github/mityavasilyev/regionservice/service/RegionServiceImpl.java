@@ -120,13 +120,14 @@ public class RegionServiceImpl implements RegionService {
         if (region.getRegionCode() <= 0)
             throw new IllegalArgumentException("Region code cannot be less or equal to 0");
 
-        if (region.getRegionName() == null || region.getRegionName().isBlank())
+        if (region.getRegionName() != null && region.getRegionName().isBlank())
             throw new IllegalArgumentException("Region name cannot be blank");
 
         log.info("Updating region {} with code: {}", region.getRegionName(), region.getRegionCode());
 
         try {
             region.setRegionName(WordUtils.capitalizeFully(region.getRegionName()));
+            region.setRegionShortName(region.getRegionShortName().toUpperCase(Locale.ROOT));
             boolean response = mapper.updateRegion(region);
             if (!response) throw new RuntimeException();
             return true;
