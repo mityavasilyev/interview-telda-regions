@@ -66,7 +66,7 @@ class RegionMapperTest {
     }
 
     @Test
-    void findByName() {
+    void findByName() {// TODO: 26.03.2022 Implement case sensitive tests
         mapper.addRegion(testRegion);
         Optional<Region> response = mapper.findByName(testRegion.getRegionName());
         Region retrieved = response.orElse(null);
@@ -115,6 +115,24 @@ class RegionMapperTest {
         Region updatedRegion = response.orElse(null);
         assertNotNull(updatedRegion);
         assertEquals(region.getRegionName(), updatedRegion.getRegionName());
+        assertEquals(region.getRegionShortName(), updatedRegion.getRegionShortName());
+
+    }
+
+    @Test
+    void updateRegion_partialUpdate() {
+        mapper.addRegion(testRegion);
+
+        Region region = Region.builder()
+                .id(1L)
+                .regionShortName("HEY")
+                .build();
+        assertTrue(mapper.updateRegion(region));
+
+        Optional<Region> response = mapper.findById(1L);
+        Region updatedRegion = response.orElse(null);
+        assertNotNull(updatedRegion);
+        assertEquals(testRegion.getRegionName(), updatedRegion.getRegionName());
         assertEquals(region.getRegionShortName(), updatedRegion.getRegionShortName());
 
     }

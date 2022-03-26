@@ -62,10 +62,18 @@ public interface RegionMapper {
     @Delete("delete from region WHERE id = #{id}")
     boolean deleteRegion(@Param("id") Long id);
 
-    @Update("UPDATE region SET " + COLUMN_REGION_NAME + " = #{regionName}," +
-            " " + COLUMN_REGION_SHORT_NAME + " = #{regionShortName}" +
-            " WHERE id = #{id}")
-    boolean updateRegion(Region region);
+//    @Update("UPDATE region SET " + COLUMN_REGION_NAME + " = #{regionName}," +
+//            " " + COLUMN_REGION_SHORT_NAME + " = #{regionShortName}" +
+//            " WHERE id = #{id}")
+@Update({"<script>",
+        "update region",
+        "   <set>",
+        "       <if test='regionName != null'>REGION_NAME=#{regionName},</if>",
+        "       <if test='regionShortName != null'>REGION_SHORT_NAME=#{regionShortName},</if>",
+        "   </set>",
+        "where id=#{id}",
+        "</script>"})
+boolean updateRegion(Region region);// TODO: 26.03.2022 Update only provided arguments
 
 
 }
