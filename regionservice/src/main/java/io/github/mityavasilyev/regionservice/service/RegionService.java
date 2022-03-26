@@ -2,24 +2,25 @@ package io.github.mityavasilyev.regionservice.service;
 
 import io.github.mityavasilyev.regionservice.exception.RegionNotFoundException;
 import io.github.mityavasilyev.regionservice.model.Region;
+import io.github.mityavasilyev.regionservice.model.RegionDTO;
 
 import java.util.List;
 
 public interface RegionService {
 
-    List<Region> getAllRegions();
+    List<RegionDTO> getAllRegions();
 
-    List<Region> getAllRegionsByNameContaining(String stringToSearchFor);
+    List<RegionDTO> getAllRegionsByNameContaining(String stringToSearchFor) throws IllegalArgumentException;
 
-    Region getRegionById(Long id) throws RegionNotFoundException;
+    RegionDTO getRegionById(Long id) throws RegionNotFoundException, IllegalArgumentException;
 
-    Region getRegionByName(String regionName) throws RegionNotFoundException;
+    RegionDTO getRegionByName(String regionName) throws RegionNotFoundException, IllegalArgumentException;
 
-    Region getRegionByShortName(String regionShortName) throws RegionNotFoundException;
+    RegionDTO getRegionByShortName(String regionShortName) throws RegionNotFoundException, IllegalArgumentException;
 
-    boolean addRegion(Region region);
+    boolean addRegion(Region region) throws IllegalArgumentException;
 
-    boolean deleteRegion(Long id);
+    boolean deleteRegion(Long id) throws RegionNotFoundException, IllegalArgumentException;
 
-    boolean updateRegion(Long id, Region region);
+    boolean updateRegion(Region region) throws RegionNotFoundException, IllegalArgumentException;
 }
