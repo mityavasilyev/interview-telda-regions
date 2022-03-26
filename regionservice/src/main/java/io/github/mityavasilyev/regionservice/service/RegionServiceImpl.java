@@ -1,5 +1,6 @@
 package io.github.mityavasilyev.regionservice.service;
 
+import io.github.mityavasilyev.regionservice.exception.MissingRegionDataException;
 import io.github.mityavasilyev.regionservice.exception.RegionNotFoundException;
 import io.github.mityavasilyev.regionservice.mapper.RegionMapper;
 import io.github.mityavasilyev.regionservice.model.Region;
@@ -42,15 +43,15 @@ public class RegionServiceImpl implements RegionService {
     }
 
     @Override
-    public RegionDTO getRegionById(Long id) throws RegionNotFoundException, IllegalArgumentException {
+    public RegionDTO getRegionByCode(Long code) throws RegionNotFoundException, IllegalArgumentException {
 
-        if (id <= 0) throw new IllegalArgumentException("Id cannot be 0 or less than 0");
-        log.info("Getting a region by id: {}", id);
+        if (code <= 0) throw new IllegalArgumentException("Region code cannot be 0 or less than 0");
+        log.info("Getting a region by code: {}", code);
 
-        return mapper.findById(id)
+        return mapper.findByCode(code)
                 .map(RegionDTO::entityToDTO)
                 .orElseThrow(() -> {
-                    throw new RegionNotFoundException("No region with such id: " + id);
+                    throw new RegionNotFoundException("No region with such code: " + code);
                 });
     }
 
@@ -82,10 +83,12 @@ public class RegionServiceImpl implements RegionService {
 
     @Override
     public boolean addRegion(Region region) throws IllegalArgumentException {
-
+        // TODO: 26.03.2022 Add check if region code is already taken
         if (region.getRegionName() == null || region.getRegionName().isBlank())
             throw new IllegalArgumentException("Region name cannot be blank");
-        log.info("Adding a new region: {}", region.getRegionName());
+        if (region.getRegionCode() == null || region.getRegionCode() <= 0)
+            throw new MissingRegionDataException("No valid region code provided");
+        log.info("Adding a new region: {}-{}", region.getRegionCode(), region.getRegionName());
 
         try {
             mapper.addRegion(processRegion(region));
@@ -98,18 +101,18 @@ public class RegionServiceImpl implements RegionService {
     }
 
     @Override
-    public boolean deleteRegion(Long id) throws RegionNotFoundException, IllegalArgumentException {
+    public boolean deleteRegion(Long regionCode) throws RegionNotFoundException, IllegalArgumentException {
 
-        if (id <= 0) throw new IllegalArgumentException("Id cannot be 0 or less than 0");
-        log.info("Deleting region with id: {}", id);
+        if (regionCode <= 0) throw new IllegalArgumentException("Region Code cannot be 0 or less than 0");
+        log.info("Deleting region with id: {}", regionCode);
 
-        return mapper.deleteRegion(id);
+        return mapper.deleteRegion(regionCode);
     }
 
     @Override
     public boolean updateRegion(Region region) throws RegionNotFoundException, IllegalArgumentException {
 
-        if (region.getId() == null) throw new IllegalArgumentException("Region ID cannot be empty");
+        if (region.getRegionCode() == null) throw new IllegalArgumentException("Region code cannot be empty");
         if (region.getRegionName() == null || region.getRegionName().isBlank())
             throw new IllegalArgumentException("Region name cannot be blank");
         log.info("Updating region {} with id: {}", region.getRegionName(), region.getId());

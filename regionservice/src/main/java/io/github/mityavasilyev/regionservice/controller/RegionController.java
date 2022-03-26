@@ -31,11 +31,11 @@ public class RegionController {
         return ResponseEntity.ok(new SuccessResponse<>(regionDTOS));
     }
 
-    @GetMapping("region/id/{id}")
-    public ResponseEntity<SuccessResponse<RegionDTO>> getRegionById(@PathVariable Long id) {
-        log.info("New request: [/api/v1/region/id/{}]", id);
+    @GetMapping("region/code/{code}")
+    public ResponseEntity<SuccessResponse<RegionDTO>> getRegionByCode(@PathVariable Long code) {
+        log.info("New request: [/api/v1/region/code/{}]", code);
 
-        RegionDTO regionDTO = service.getRegionById(id);
+        RegionDTO regionDTO = service.getRegionByCode(code);
 
         return ResponseEntity.ok(new SuccessResponse<>(regionDTO));
     }
@@ -63,10 +63,12 @@ public class RegionController {
         log.info("New request: [/api/v1/region/save]");
 
         Region region = Region.builder()
+                .regionCode(regionDTO.regionCode())
                 .regionName(regionDTO.regionName())
                 .regionShortName(regionDTO.regionShortName())
                 .build();
         boolean response = service.addRegion(region);
+        if (!response) throw new RuntimeException("Failed to save");
         // TODO: 26.03.2022 Add check for failed saving
 
         return ResponseEntity
@@ -74,23 +76,23 @@ public class RegionController {
                 .body(new SuccessResponse<>(RegionDTO.entityToDTO(region)));
     }
 
-    @DeleteMapping("region/id/{id}")
-    public ResponseEntity<SuccessResponse<Boolean>> deleteRegion(@PathVariable Long id) {
-        log.info("New request: [/api/v1/region/id/{}] DELETE", id);
+    @DeleteMapping("region/code/{code}")
+    public ResponseEntity<SuccessResponse<Boolean>> deleteRegion(@PathVariable Long code) {
+        log.info("New request: [/api/v1/region/code/{}] DELETE", code);
 
-        boolean response = service.deleteRegion(id);
+        boolean response = service.deleteRegion(code);
 
         return ResponseEntity.ok(new SuccessResponse<>(response));
     }
 
-    @PutMapping("region/id/{id}")
+    @PutMapping("region/code/{code}")
     public ResponseEntity<SuccessResponse<Boolean>> updateRegion(
-            @PathVariable Long id,
+            @PathVariable Long code,
             @RequestBody RegionDTO regionDTO) {
-        log.info("New request: [/api/v1/region/id/{}] PUT", id);
+        log.info("New request: [/api/v1/region/code/{}] PUT", code);
 
         Region region = Region.builder()
-                .id(id)
+                .regionCode(code)
                 .regionName(regionDTO.regionName())
                 .regionShortName(regionDTO.regionShortName())
                 .build();

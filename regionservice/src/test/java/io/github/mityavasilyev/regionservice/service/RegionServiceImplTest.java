@@ -1,5 +1,6 @@
 package io.github.mityavasilyev.regionservice.service;
 
+import io.github.mityavasilyev.regionservice.exception.MissingRegionDataException;
 import io.github.mityavasilyev.regionservice.exception.RegionNotFoundException;
 import io.github.mityavasilyev.regionservice.mapper.RegionMapper;
 import io.github.mityavasilyev.regionservice.model.Region;
@@ -33,13 +34,13 @@ class RegionServiceImplTest {
     @BeforeEach
     void setUp() {
         testRegion = Region.builder()
-                .id(1L)
+                .regionCode(1L)
                 .regionName("Test Region")
                 .regionShortName("Short Name")
                 .build();
 
         dummyRepo = new HashMap<>();
-        dummyRepo.put(testRegion.getId(), testRegion);
+        dummyRepo.put(testRegion.getRegionCode(), testRegion);
     }
 
     // Testing getAllRegions()
@@ -68,32 +69,32 @@ class RegionServiceImplTest {
                 () -> service.getAllRegionsByNameContaining(""));
     }
 
-    // Testing getRegionById()
+    // Testing getRegionByCode()
     @Test
-    void getRegionById() {
-        when(mapper.findById(Mockito.any()))
+    void getRegionByCode() {
+        when(mapper.findByCode(Mockito.any()))
                 .thenReturn(Optional.ofNullable(dummyRepo.get(1L)));
-        RegionDTO regionDTO = service.getRegionById(1L);
+        RegionDTO regionDTO = service.getRegionByCode(1L);
 
         assertEquals(testRegion.getRegionName(), regionDTO.regionName());
         assertEquals(testRegion.getRegionShortName(), regionDTO.regionShortName());
     }
 
     @Test
-    void getRegionById_throwsRegionNotFound() {
-        when(mapper.findById(Mockito.any()))
+    void getRegionByCode_throwsRegionNotFound() {
+        when(mapper.findByCode(Mockito.any()))
                 .thenReturn(Optional.empty());
 
         assertThrows(RegionNotFoundException.class,
-                () -> service.getRegionById(1L));
+                () -> service.getRegionByCode(1L));
     }
 
     @Test
-    void getRegionById_throwsIllegalArgument() {
+    void getRegionByCode_throwsIllegalArgument() {
         assertThrows(IllegalArgumentException.class,
-                () -> service.getRegionById(-1L));
+                () -> service.getRegionByCode(-1L));
         assertThrows(IllegalArgumentException.class,
-                () -> service.getRegionById(0L));
+                () -> service.getRegionByCode(0L));
     }
 
     // Testing getRegionByName()
@@ -156,7 +157,7 @@ class RegionServiceImplTest {
     @Test
     void addRegion() {
         Region newRegion = Region.builder()
-                .id(2L)
+                .regionCode(2L)
                 .regionName("New Region")
                 .regionShortName("NR")
                 .build();
@@ -168,6 +169,12 @@ class RegionServiceImplTest {
         when(mapper.addRegion(any()))
                 .thenThrow(new RuntimeException("DB Mock exception"));
         assertFalse(service.addRegion(newRegion));
+    }
+
+    @Test
+    void addRegion_throwsMissingRegionDataOnEmptyRegionCode() {
+        assertThrows(MissingRegionDataException.class,
+                () -> service.addRegion(Region.builder().regionName("Bruh Region").build()));
     }
 
     @Test
@@ -203,13 +210,13 @@ class RegionServiceImplTest {
     void updateRegion() {
         testRegion.setRegionName("New Name");
         when(mapper.updateRegion(any()))
-                .thenReturn(dummyRepo.put(testRegion.getId(), testRegion) != null);
+                .thenReturn(dummyRepo.put(testRegion.getRegionCode(), testRegion) != null);
 
         assertTrue(service.updateRegion(testRegion));
 
         dummyRepo.clear();
         when(mapper.updateRegion(any()))
-                .thenReturn(dummyRepo.put(testRegion.getId(), testRegion) != null);
+                .thenReturn(dummyRepo.put(testRegion.getRegionCode(), testRegion) != null);
         assertFalse(service.updateRegion(testRegion));
 
         when(mapper.updateRegion(any()))
@@ -223,15 +230,16 @@ class RegionServiceImplTest {
                 () -> service.updateRegion(Region.builder().build()));
 
         assertThrows(IllegalArgumentException.class,
-                () -> service.updateRegion(Region.builder().id(1L).build()));
+                () -> service.updateRegion(Region.builder().regionCode(1L).build()));
 
         assertThrows(IllegalArgumentException.class,
-                () -> service.updateRegion(Region.builder().id(1L).regionName(" ").build()));
+                () -> service.updateRegion(Region.builder().regionCode(1L).regionName(" ").build()));
     }
 
     @Test
     void processRegion() {
         Region newRegion = Region.builder()
+                .regionCode(3L)
                 .regionName("new region")
                 .build();
         when(mapper.addRegion(any()))

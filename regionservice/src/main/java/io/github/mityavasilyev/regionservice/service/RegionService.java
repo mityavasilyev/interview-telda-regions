@@ -25,14 +25,14 @@ public interface RegionService {
     List<RegionDTO> getAllRegionsByNameContaining(String stringToSearchFor) throws IllegalArgumentException;
 
     /**
-     * Retrieves region with matching id
+     * Retrieves region with matching code
      *
-     * @param id ID to search for
+     * @param code Region code to search for
      * @return Matching region
-     * @throws RegionNotFoundException  If no region with such id was found
-     * @throws IllegalArgumentException If id is less or equals to 0
+     * @throws RegionNotFoundException  If no region with such code was found
+     * @throws IllegalArgumentException If code is less or equals to 0
      */
-    RegionDTO getRegionById(Long id) throws RegionNotFoundException, IllegalArgumentException;
+    RegionDTO getRegionByCode(Long code) throws RegionNotFoundException, IllegalArgumentException;
 
     /**
      * Retrieves region with matching name
@@ -64,26 +64,26 @@ public interface RegionService {
     boolean addRegion(Region region) throws IllegalArgumentException;
 
     /**
-     * Deletes region with matching id
+     * Deletes region with matching region code
      *
-     * @param id ID of the region to delete
+     * @param regionCode Code of the region to delete
      * @return If deleted successfully. False if no such region was found
      * @throws RegionNotFoundException  deprecated
-     * @throws IllegalArgumentException If ID is less or equal to 0
+     * @throws IllegalArgumentException If region code is less or equal to 0
      */
-    boolean deleteRegion(Long id) throws RegionNotFoundException, IllegalArgumentException;
+    boolean deleteRegion(Long regionCode) throws RegionNotFoundException, IllegalArgumentException;
 
     /**
      * Updates region in database with provided one.
-     * Fetches ID from provided region, then updates one in
-     * db that has the same ID with new data.
+     * Fetches region code from provided region, then updates one in
+     * db that has the same region code with new data.
      * <p>
      * Updates only provided fields. Those that are null will be skipped
      *
-     * @param region Region with ID and new data
+     * @param region Region with code and new data
      * @return If updated successfully
      * @throws RegionNotFoundException  deprecated
-     * @throws IllegalArgumentException If provided region has no ID or if Region name is null or blank
+     * @throws IllegalArgumentException If provided region has no region code or if Region name is null or blank
      */
     boolean updateRegion(Region region) throws RegionNotFoundException, IllegalArgumentException;
 }

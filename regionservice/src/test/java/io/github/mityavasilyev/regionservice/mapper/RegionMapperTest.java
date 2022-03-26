@@ -28,6 +28,7 @@ class RegionMapperTest {
     private final Region testRegion = Region.builder()
             .regionName("TestRegion")
             .regionShortName("TO")
+            .regionCode(1L)
             .build();
 
     @Autowired
@@ -49,6 +50,7 @@ class RegionMapperTest {
         mapper.addRegion(Region.builder()
                 .regionName("Should not be found")
                 .regionShortName("SNBF")
+                .regionCode(2L)
                 .build());
         List<Region> regions = mapper.findAllContaining("te");
         assertEquals(1, regions.size());
@@ -62,6 +64,7 @@ class RegionMapperTest {
         assertNotNull(retrieved);
         assertEquals(testRegion.getRegionName(), retrieved.getRegionName());
         assertEquals(testRegion.getRegionShortName(), retrieved.getRegionShortName());
+        assertEquals(testRegion.getRegionCode(), retrieved.getRegionCode());
 
     }
 
@@ -73,6 +76,7 @@ class RegionMapperTest {
         assertNotNull(retrieved);
         assertEquals(testRegion.getRegionName(), retrieved.getRegionName());
         assertEquals(testRegion.getRegionShortName(), retrieved.getRegionShortName());
+        assertEquals(testRegion.getRegionCode(), retrieved.getRegionCode());
     }
 
     @Test
@@ -83,6 +87,18 @@ class RegionMapperTest {
         assertNotNull(retrieved);
         assertEquals(testRegion.getRegionName(), retrieved.getRegionName());
         assertEquals(testRegion.getRegionShortName(), retrieved.getRegionShortName());
+        assertEquals(testRegion.getRegionCode(), retrieved.getRegionCode());
+    }
+
+    @Test
+    void findByCode() {
+        mapper.addRegion(testRegion);
+        Optional<Region> response = mapper.findByCode(testRegion.getRegionCode());
+        Region retrieved = response.orElse(null);
+        assertNotNull(retrieved);
+        assertEquals(testRegion.getRegionName(), retrieved.getRegionName());
+        assertEquals(testRegion.getRegionShortName(), retrieved.getRegionShortName());
+        assertEquals(testRegion.getRegionCode(), retrieved.getRegionCode());
     }
 
     @Test
@@ -97,7 +113,7 @@ class RegionMapperTest {
         assertTrue(mapper.findAll().isEmpty());
         mapper.addRegion(testRegion);
         assertFalse(mapper.findAll().isEmpty());
-        mapper.deleteRegion(1L);
+        mapper.deleteRegion(testRegion.getRegionCode());
         assertTrue(mapper.findAll().isEmpty());
     }
 
@@ -116,6 +132,7 @@ class RegionMapperTest {
         assertNotNull(updatedRegion);
         assertEquals(region.getRegionName(), updatedRegion.getRegionName());
         assertEquals(region.getRegionShortName(), updatedRegion.getRegionShortName());
+        assertEquals(region.getRegionCode(), updatedRegion.getRegionCode());
 
     }
 
@@ -124,7 +141,7 @@ class RegionMapperTest {
         mapper.addRegion(testRegion);
 
         Region region = Region.builder()
-                .id(1L)
+                .regionCode(1L)
                 .regionShortName("HEY")
                 .build();
         assertTrue(mapper.updateRegion(region));
@@ -134,6 +151,7 @@ class RegionMapperTest {
         assertNotNull(updatedRegion);
         assertEquals(testRegion.getRegionName(), updatedRegion.getRegionName());
         assertEquals(region.getRegionShortName(), updatedRegion.getRegionShortName());
+        assertEquals(testRegion.getRegionCode(), updatedRegion.getRegionCode());
 
     }
 }
