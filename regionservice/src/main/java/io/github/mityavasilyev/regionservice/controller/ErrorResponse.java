@@ -1,4 +1,4 @@
-package io.github.mityavasilyev.regionservice.exception;
+package io.github.mityavasilyev.regionservice.controller;
 
 import lombok.Getter;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;

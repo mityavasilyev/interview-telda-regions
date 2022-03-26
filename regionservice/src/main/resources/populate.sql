@@ -1,7 +1,7 @@
 insert into REGION (REGION_NAME, REGION_SHORT_NAME, REGION_CODE)
 VALUES ('Ленинградская Область', 'ЛО', 47);
 insert into REGION (REGION_NAME, REGION_SHORT_NAME, REGION_CODE)
-VALUES ('Московская Область', 'ЛО', 50);
+VALUES ('Московская Область', 'МО', 50);
 insert into REGION (REGION_NAME, REGION_SHORT_NAME, REGION_CODE)
 VALUES ('Москва', 'МСК', 77);
 insert into REGION (REGION_NAME, REGION_SHORT_NAME, REGION_CODE)

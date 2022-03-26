@@ -1,6 +1,5 @@
 package io.github.mityavasilyev.regionservice.controller;
 
-import io.github.mityavasilyev.regionservice.exception.ErrorResponse;
 import io.github.mityavasilyev.regionservice.exception.MissingRegionDataException;
 import io.github.mityavasilyev.regionservice.exception.RegionNotFoundException;
 import lombok.extern.slf4j.Slf4j;
