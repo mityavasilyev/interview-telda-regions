@@ -34,3 +34,4 @@ build/
 /testdb.lock.db
 /testdb.mv.db
 /testdb.trace.db
+/regionservice/testdb.mv.db
