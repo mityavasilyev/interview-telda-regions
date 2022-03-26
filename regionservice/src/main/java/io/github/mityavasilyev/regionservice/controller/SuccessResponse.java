@@ -19,14 +19,14 @@ public class SuccessResponse<T> {
         this.response = response;
     }
 
-    public SuccessResponse(T bodyObject) {
+    public SuccessResponse(T data) {
         ServletUriComponentsBuilder builder = ServletUriComponentsBuilder.fromCurrentRequestUri();
-        this.response = new SuccessDTO<>(builder.build().toUri(), SUCCESS_HEADER, bodyObject);
+        this.response = new SuccessDTO<>(builder.build().toUri(), SUCCESS_HEADER, data);
     }
 
-    public SuccessResponse(T bodyObject, String status) {
+    public SuccessResponse(T data, String status) {
         ServletUriComponentsBuilder builder = ServletUriComponentsBuilder.fromCurrentRequestUri();
-        this.response = new SuccessDTO<>(builder.build().toUri(), status, bodyObject);
+        this.response = new SuccessDTO<>(builder.build().toUri(), status, data);
     }
 
     public SuccessResponse(String status, URI uri) {
@@ -34,11 +34,11 @@ public class SuccessResponse<T> {
         this.response = new SuccessDTO<>(builder.build().toUri(), status, null);
     }
 
-    public SuccessResponse(T bodyObject, String status, URI uri) {
-        this.response = new SuccessDTO<>(uri, status, bodyObject);
+    public SuccessResponse(T data, String status, URI uri) {
+        this.response = new SuccessDTO<>(uri, status, data);
     }
 
-    public record SuccessDTO<T>(URI path, String status, T bodyObject) {
+    public record SuccessDTO<T>(URI path, String status, T data) {
 
     }
 }

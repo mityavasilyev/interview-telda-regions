@@ -68,8 +68,6 @@ public class RegionController {
                 .regionShortName(regionDTO.regionShortName())
                 .build();
         boolean response = service.addRegion(region);
-        if (!response) throw new RuntimeException("Failed to save");
-        // TODO: 26.03.2022 Add check for failed saving
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)

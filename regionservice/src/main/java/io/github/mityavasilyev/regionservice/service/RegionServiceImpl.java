@@ -95,7 +95,8 @@ public class RegionServiceImpl implements RegionService {
         } catch (RuntimeException exception) {
             // If failed to save to database
             log.error("Failed to save region [{}] to database", region.getRegionName());
-            return false;
+            throw new IllegalArgumentException(
+                    String.format("Region Code [%s] is already taken", region.getRegionCode()));
         }
         return true;
     }
@@ -106,24 +107,34 @@ public class RegionServiceImpl implements RegionService {
         if (regionCode <= 0) throw new IllegalArgumentException("Region Code cannot be 0 or less than 0");
         log.info("Deleting region with id: {}", regionCode);
 
-        return mapper.deleteRegion(regionCode);
+        boolean response = mapper.deleteRegion(regionCode);
+        if (!response) throw new RegionNotFoundException("No region with such code", regionCode.toString());
+        return true;
     }
 
     @Override
     public boolean updateRegion(Region region) throws RegionNotFoundException, IllegalArgumentException {
 
-        if (region.getRegionCode() == null) throw new IllegalArgumentException("Region code cannot be empty");
+        if (region.getRegionCode() == null)
+            throw new IllegalArgumentException("Region code cannot be empty");
+        if (region.getRegionCode() <= 0)
+            throw new IllegalArgumentException("Region code cannot be less or equal to 0");
+
         if (region.getRegionName() == null || region.getRegionName().isBlank())
             throw new IllegalArgumentException("Region name cannot be blank");
-        log.info("Updating region {} with id: {}", region.getRegionName(), region.getId());
+
+        log.info("Updating region {} with code: {}", region.getRegionName(), region.getRegionCode());
 
         try {
             region.setRegionName(WordUtils.capitalizeFully(region.getRegionName()));
-            return mapper.updateRegion(region);
+            boolean response = mapper.updateRegion(region);
+            if (!response) throw new RuntimeException();
+            return true;
         } catch (RuntimeException exception) {
             // If failed to save to database
             log.error("Failed to update region [{}]", region.getRegionName());
-            return false;
+            throw new RegionNotFoundException(
+                    String.format("No region with code [%s] was found", region.getRegionCode()), region.getRegionCode().toString());
         }
     }
 

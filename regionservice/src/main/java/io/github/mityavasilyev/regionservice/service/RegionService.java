@@ -1,5 +1,6 @@
 package io.github.mityavasilyev.regionservice.service;
 
+import io.github.mityavasilyev.regionservice.exception.MissingRegionDataException;
 import io.github.mityavasilyev.regionservice.exception.RegionNotFoundException;
 import io.github.mityavasilyev.regionservice.model.Region;
 import io.github.mityavasilyev.regionservice.model.RegionDTO;
@@ -61,7 +62,7 @@ public interface RegionService {
      * @return If saved successfully
      * @throws IllegalArgumentException If region name is null or blank
      */
-    boolean addRegion(Region region) throws IllegalArgumentException;
+    boolean addRegion(Region region) throws MissingRegionDataException, IllegalArgumentException;
 
     /**
      * Deletes region with matching region code
