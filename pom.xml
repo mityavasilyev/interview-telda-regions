@@ -18,7 +18,7 @@
 
     <modules>
         <module>regionservice</module>
-        <module>registryServer</module>
+        <module>eurekaRegistryServer</module>
         <module>apiGateway</module>
     </modules>
 
