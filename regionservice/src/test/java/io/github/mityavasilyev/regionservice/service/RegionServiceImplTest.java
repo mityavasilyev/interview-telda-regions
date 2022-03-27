@@ -189,13 +189,18 @@ class RegionServiceImplTest {
     // Testing deleteRegion()
     @Test
     void deleteRegion() {
+        when(mapper.findByCode(1L))
+                .thenReturn(Optional.ofNullable(dummyRepo.get(1L)));
         when(mapper.deleteRegion(1L))
                 .thenReturn(dummyRepo.remove(1L) != null);
         assertTrue(service.deleteRegion(1L));
+    }
 
+    @Test
+    void deleteRegion_throwsRegionNotFound() {
         // Deleting non existing entity
-        when(mapper.deleteRegion(2L))
-                .thenReturn(dummyRepo.remove(2L) != null);
+        when(mapper.findByCode(2L))
+                .thenReturn(Optional.empty());
         assertThrows(RegionNotFoundException.class,
                 () -> service.deleteRegion(2L));
     }
@@ -212,20 +217,21 @@ class RegionServiceImplTest {
     @Test
     void updateRegion() {
         testRegion.setRegionName("New Name");
+        when(mapper.findByCode(testRegion.getRegionCode()))
+                .thenReturn(Optional.ofNullable(testRegion));
         when(mapper.updateRegion(any()))
                 .thenReturn(dummyRepo.put(testRegion.getRegionCode(), testRegion) != null);
 
         assertTrue(service.updateRegion(testRegion));
+    }
 
+    @Test
+    void updateRegion_throwsRegionNotFound() {
         // Trying to update non existing entity
-        dummyRepo.clear();
-        when(mapper.updateRegion(any()))
-                .thenReturn(dummyRepo.put(testRegion.getRegionCode(), testRegion) != null);
-        assertThrows(RegionNotFoundException.class,
-                () -> service.updateRegion(testRegion));
+        when(mapper.findByCode(testRegion.getRegionCode()))
+                .thenReturn(Optional.empty());
 
-        when(mapper.updateRegion(any()))
-                .thenThrow(new RuntimeException("Some trouble with saving to DB"));
+        dummyRepo.clear();
         assertThrows(RegionNotFoundException.class,
                 () -> service.updateRegion(testRegion));
     }
@@ -236,7 +242,7 @@ class RegionServiceImplTest {
                 () -> service.updateRegion(Region.builder().build()));
 
         assertThrows(IllegalArgumentException.class,
-                () -> service.updateRegion(Region.builder().regionCode(1L).build()));
+                () -> service.updateRegion(Region.builder().regionCode(-1L).build()));
 
         assertThrows(IllegalArgumentException.class,
                 () -> service.updateRegion(Region.builder().regionCode(1L).regionName(" ").build()));

@@ -8,20 +8,30 @@ import io.github.mityavasilyev.regionservice.model.RegionDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.text.WordUtils;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
 @Transactional
+@CacheConfig(cacheNames = {"caffeineCache"})
 @Service
 public class RegionServiceImpl implements RegionService {
 
     private final RegionMapper mapper;
 
+    private final CacheManager cacheManager;
+
+    @Cacheable(value = "all_regions_cache")
     @Override
     public List<RegionDTO> getAllRegions() {
 
@@ -31,6 +41,7 @@ public class RegionServiceImpl implements RegionService {
                 .toList();
     }
 
+    @Cacheable(value = "all_regions_cache")
     @Override
     public List<RegionDTO> getAllRegionsByNameContaining(String stringToSearchFor) throws IllegalArgumentException {
 
@@ -42,6 +53,7 @@ public class RegionServiceImpl implements RegionService {
                 .toList();
     }
 
+    @Cacheable(value = "region_cache", key = "#code")
     @Override
     public RegionDTO getRegionByCode(Long code) throws RegionNotFoundException, IllegalArgumentException {
 
@@ -55,6 +67,7 @@ public class RegionServiceImpl implements RegionService {
                 });
     }
 
+    @Cacheable(value = "region_cache", key = "#regionName")
     @Override
     public RegionDTO getRegionByName(String regionName) throws RegionNotFoundException, IllegalArgumentException {
 
@@ -68,6 +81,7 @@ public class RegionServiceImpl implements RegionService {
                 });
     }
 
+    @Cacheable(value = "region_cache", key = "#regionShortName")
     @Override
     public RegionDTO getRegionByShortName(String regionShortName) throws RegionNotFoundException, IllegalArgumentException {
 
@@ -81,6 +95,7 @@ public class RegionServiceImpl implements RegionService {
                 });
     }
 
+    @CacheEvict(value = "all_regions_cache", allEntries = true)
     @Override
     public boolean addRegion(Region region) throws IllegalArgumentException {
         // TODO: 26.03.2022 Add check if region code is already taken
@@ -101,17 +116,24 @@ public class RegionServiceImpl implements RegionService {
         return true;
     }
 
+    @CacheEvict(value = "all_regions_cache", allEntries = true)
     @Override
     public boolean deleteRegion(Long regionCode) throws RegionNotFoundException, IllegalArgumentException {
 
         if (regionCode <= 0) throw new IllegalArgumentException("Region Code cannot be 0 or less than 0");
         log.info("Deleting region with id: {}", regionCode);
 
+        // This block is needed for caching and possible future return of the entity that is marked for deletion
+        Optional<Region> fromDatabase = mapper.findByCode(regionCode);
+        if (fromDatabase.isEmpty())
+            throw new RegionNotFoundException("No region with such code", regionCode.toString());
+
         boolean response = mapper.deleteRegion(regionCode);
-        if (!response) throw new RegionNotFoundException("No region with such code", regionCode.toString());
-        return true;
+        if (response) clearCacheForRegion(fromDatabase.get());  // Clearing cache for a region
+        return response;
     }
 
+    @CacheEvict(value = "all_regions_cache", allEntries = true)
     @Override
     public boolean updateRegion(Region region) throws RegionNotFoundException, IllegalArgumentException {
 
@@ -123,20 +145,25 @@ public class RegionServiceImpl implements RegionService {
         if (region.getRegionName() != null && region.getRegionName().isBlank())
             throw new IllegalArgumentException("Region name cannot be blank");
 
+        // This block is needed for caching and possible future return of the entity that is marked for deletion
+        Optional<Region> fromDatabase = mapper.findByCode(region.getRegionCode());
+        if (fromDatabase.isEmpty())
+            throw new RegionNotFoundException("No region with such code", region.getRegionCode().toString());
+
         log.info("Updating region {} with code: {}", region.getRegionName(), region.getRegionCode());
 
-        try {
-            region.setRegionName(WordUtils.capitalizeFully(region.getRegionName()));
-            region.setRegionShortName(region.getRegionShortName().toUpperCase(Locale.ROOT));
-            boolean response = mapper.updateRegion(region);
-            if (!response) throw new RuntimeException();
-            return true;
-        } catch (RuntimeException exception) {
-            // If failed to save to database
-            log.error("Failed to update region [{}]", region.getRegionName());
-            throw new RegionNotFoundException(
-                    String.format("No region with code [%s] was found", region.getRegionCode()), region.getRegionCode().toString());
+        region.setRegionName(WordUtils.capitalizeFully(region.getRegionName()));
+        region.setRegionShortName(region.getRegionShortName().toUpperCase(Locale.ROOT));
+
+        // Updating
+        boolean response = mapper.updateRegion(region);
+        if (!response) { // Just in case
+            log.error("Failed to update region: {}", region);
+            throw new RuntimeException("Failed to save to db");
         }
+
+        clearCacheForRegion(fromDatabase.get());
+        return true;
     }
 
     /**
@@ -165,5 +192,22 @@ public class RegionServiceImpl implements RegionService {
         return region;
     }
 
+    /**
+     * Evicts all related cache for provided region
+     *
+     * @param region Cache of which needs to be invalidated
+     */
+    private void clearCacheForRegion(Region region) {
+        try {
+            log.info("Clearing cache for region: {}", region);
+            Cache regionCache = cacheManager.getCache("region_cache");
+            assert regionCache != null;
+            regionCache.evictIfPresent(region.getRegionCode());
+            regionCache.evictIfPresent(region.getRegionName().toString());
+            regionCache.evictIfPresent(region.getRegionShortName().toString());
+        } catch (Exception exception) {
+            log.warn("No cache to evict");
+        }
+    }
 
 }
