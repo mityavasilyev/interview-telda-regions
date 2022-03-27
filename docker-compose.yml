@@ -8,11 +8,13 @@ services:
       - "80:80"
     networks:
       - telda
+    environment:
+      REGISTRY_SERVER_URL: http://eurekaserver:8761/eureka/
     depends_on:
       - eurekaServer
 
   eurekaserver:
-    container_name: telda-eureka-registry
+    container_name: telda-eureka-server
     build: eurekaRegistryServer
     ports:
       - "8761:8761"
@@ -23,9 +25,11 @@ services:
     container_name: telda-region-service
     build: regionservice
     ports:
-      - "8080:8080"
+      - "8085:8085"
     networks:
       - telda
+    environment:
+      REGISTRY_SERVER_URL: http://eurekaserver:8761/eureka/
     depends_on:
       - eurekaServer
       - apiGateway
