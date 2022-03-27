@@ -10,7 +10,8 @@
 
 For live demo navigate to root folder of the project (`interview-telda-regions/`) and run a
 command `docker-compose up` <br/>
-All containers utilize RAM or their docker container space, so you won't need to clean up after execution
+All containers utilize RAM or their docker container space, so you won't need to clean up after execution. Except for
+the containers and images of course...
 
 For project to work properly port 80(api) and 8761(eureka-dashboard) must be available
 

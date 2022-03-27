@@ -34,6 +34,9 @@ in [RegionService](https://github.com/mityavasilyev/interview-telda-regions/blob
 . If there is some trouble, RegionService will throw a dedicated exception, and it will be processed by
 an [ExceptionController](https://github.com/mityavasilyev/interview-telda-regions/blob/master/regionservice/src/main/java/io/github/mityavasilyev/regionservice/controller/ExceptionController.java)
 
+**About caching**: Caffeine handles it basically. Configuration can be
+found [here](https://github.com/mityavasilyev/interview-telda-regions/blob/master/regionservice/src/main/java/io/github/mityavasilyev/regionservice/config/CaffeineCacheConfig.java)
+
 ## Data and Object Mapping
 
 ```
@@ -41,7 +44,7 @@ an [ExceptionController](https://github.com/mityavasilyev/interview-telda-region
 ```
 
 [MyBatis mapper](https://github.com/mityavasilyev/interview-telda-regions/blob/master/regionservice/src/main/java/io/github/mityavasilyev/regionservice/mapper/RegionMapper.java)
-is used for db interactions. DB of choice: H2
+is used for db interactions. DB of choice: `H2`
 
 ## Extra: Tests
 
