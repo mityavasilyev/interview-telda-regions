@@ -1,0 +1,35 @@
+version: "3"
+
+services:
+  apigateway:
+    container_name: telda-api-gateway
+    build: apiGateway
+    ports:
+      - "80:80"
+    networks:
+      - telda
+    depends_on:
+      - eurekaServer
+
+  eurekaserver:
+    container_name: telda-eureka-registry
+    build: eurekaRegistryServer
+    ports:
+      - "8761:8761"
+    networks:
+      - telda
+
+  regionservice:
+    container_name: telda-region-service
+    build: regionservice
+    ports:
+      - "8080:8080"
+    networks:
+      - telda
+    depends_on:
+      - eurekaServer
+      - apiGateway
+
+networks:
+  telda:
+    driver: bridge
