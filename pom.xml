@@ -12,12 +12,14 @@
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <spring.boot.dependencies.version>2.6.4</spring.boot.dependencies.version>
-        <spring.cloud-version>2020.0.3</spring.cloud-version>
+        <spring.boot.dependencies.version>2.6.5</spring.boot.dependencies.version>
+        <spring.cloud-version>2021.0.1</spring.cloud-version>
     </properties>
 
     <modules>
         <module>regionservice</module>
+        <module>eurekaRegistryServer</module>
+        <module>apiGateway</module>
     </modules>
 
     <dependencyManagement>

@@ -2,8 +2,20 @@ server:
   port: 8080
 
 spring:
+  application:
+    name: REGION-SERVICE
   datasource:
-    url: jdbc:h2:file:./testdb;USER=sa;PASSWORD=sa;AUTO_SERVER=TRUE; #Stored in file so that it can be inspected
+    url: jdbc:h2:mem:testDb;USER=sa;PASSWORD=sa
+    #    url: jdbc:h2:file:./testdb;USER=sa;PASSWORD=sa;AUTO_SERVER=TRUE; #Stored in file so that it can be inspected
     driver-class-name: org.h2.Driver
     username: sa
     password: sa
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    hostname: localhost
