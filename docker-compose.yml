@@ -31,8 +31,8 @@ services:
     environment:
       REGISTRY_SERVER_URL: http://eurekaserver:8761/eureka/
     depends_on:
-      - eurekaServer
-      - apiGateway
+      - eurekaserver
+      - apigateway
 
 networks:
   telda:
