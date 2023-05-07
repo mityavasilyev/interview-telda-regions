@@ -20,4 +20,4 @@ jobs:
         with:
           context: regionservice
           push: true
-          tags: my-docker-hub-namespace/my-docker-hub-repository:latest
+          tags: mityavasilyev/telda-regions:latest
