@@ -1,6 +1,6 @@
 name: Publish Docker image to Docker Hub
 on:
-  commit:
+  push:
     branches:
       - master
 jobs:
