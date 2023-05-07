@@ -18,6 +18,8 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 17
+      - name: Print directories
+          run: ls
       - name: Update Maven version
         run: mvn -B versions:set -DnewVersion=$(git describe --tags --abbrev=0) -DgenerateBackupPoms=false
       - name: Build with Maven
